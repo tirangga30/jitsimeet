@@ -24,6 +24,7 @@ const KNOWN_ROUTES = [
   "/:id/connecting",
   "/join/:id",
   "/invite/accept",
+  "/meeting/:id",
   "/provider/:id",
 ];
 
@@ -38,15 +39,18 @@ const MainLayout = ({ children }: Props) => {
   const panel = useAppSelector(selectpanel);
   const location = useLocation();
 
+  const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
   const hideHeaderFooter =
-    location.pathname.endsWith("/") ||
-    location.pathname.startsWith("/invite/accept") ||
-    location.pathname.startsWith("/join/") ||
+    normalizedPath === "/" ||
+    normalizedPath.startsWith("/invite/accept") ||
+    normalizedPath.startsWith("/meeting/") ||
+    normalizedPath.startsWith("/join/") ||
     !isKnownRoute(location.pathname);
   const showWebContainer =
-    location.pathname.startsWith("/invite/accept") ||
-    location.pathname.includes("/provider/") ||
-    location.pathname.includes("/join/");
+    normalizedPath.startsWith("/invite/accept") ||
+    normalizedPath.startsWith("/meeting/") ||
+    normalizedPath.includes("/provider/") ||
+    normalizedPath.includes("/join/");
   const useWebContainer = showWebContainer;
   const isPanelOpen =
     panel === "chat" || panel === "participants" || panel === "more";

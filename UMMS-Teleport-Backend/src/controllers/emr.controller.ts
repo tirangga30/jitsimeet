@@ -9,7 +9,7 @@ import {
 } from "../services/emr.service";
 
 config();
-const EMR_URL = process.env.JITSI_BASE_URL || "meet.bulmartech.com";
+const EMR_URL = process.env.EMR_URL || "";
 
 export async function uploadImageToEmrController(
   req: Request,

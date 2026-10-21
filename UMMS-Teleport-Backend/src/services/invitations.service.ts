@@ -76,7 +76,7 @@ function normalizeContactType(type: string): InviteeContactType {
 }
 
 const JITSI_BASE_URL =
-  process.env.JITSI_BASE_URL || "https://meet.bulmartech.com";
+  process.env.JITSI_BASE_URL || "https://meet.example.com";
 
 export async function persistInvitationBatch(
   batch: InvitationBatch,

@@ -58,15 +58,15 @@ export async function listFilesController(
   res: Response,
 ): Promise<void> {
   try {
-    if (!req.query.folder) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          message: "Upload folder name is required in query!.",
-        });
+    const folder = req.query.folder;
+    if (!folder || typeof folder !== "string") {
+      res.status(400).json({
+        success: false,
+        message: "Upload folder name is required as a query parameter",
+      });
+      return;
     }
-    const files = await listSpacesFiles(req.query.folder);
+    const files = await listSpacesFiles(folder);
     res.json({ success: true, data: files });
   } catch (error: any) {
     console.error("listFilesController error:", error);

@@ -56,6 +56,43 @@ export const Description = styled.p`
   max-width: 480px;
 `;
 
+export const ActionsWrapper = styled.div`
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+`;
+
+export const HomeActionButton = styled.button<{ $variant?: "primary" | "secondary" }>`
+  background: ${({ $variant }) =>
+    $variant === "secondary" ? "rgba(255, 255, 255, 0.15)" : "#027564"};
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(8px);
+  padding: 12px 28px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    background: ${({ $variant }) =>
+      $variant === "secondary" ? "rgba(255, 255, 255, 0.28)" : "#038d79"};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 export const IllustrationWrapper = styled.div`
   width: 100%;
   max-width: 680px;

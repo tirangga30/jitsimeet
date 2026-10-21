@@ -432,7 +432,7 @@ const Provider = () => {
       })();
 
     const roomMatch = callUrl.match(
-      /(?:meet\.bulmartech\.com\/|room=)([^?&/]+)/,
+      /(?:https?:\/\/[^/]+\/|room=)([^?&/]+)/,
     );
     const actualRoom = roomMatch ? roomMatch[1] : roomName;
 

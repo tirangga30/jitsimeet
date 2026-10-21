@@ -36,8 +36,8 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   /* Prevent auto-zoom on input focus on iOS Safari */
-  input, select, textarea, button {
-    font-size: 16px !important;
+  input, select, textarea {
+    font-size: 16px;
   }
 
   body {

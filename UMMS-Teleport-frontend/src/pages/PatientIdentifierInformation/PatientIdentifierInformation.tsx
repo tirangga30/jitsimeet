@@ -31,6 +31,9 @@ import {
   HeaderRight,
   HeaderSection,
 } from "../BandScan/BandScan.styles";
+import { useGetPatientQuery } from "../../store/services/patientApi";
+import { formatDOB } from "../../utils/utils";
+
 export const PatientIdentifierInformation = () => {
   const [showLanguageDropdown, setShowLanguageDropdown] =
     useState<boolean>(false);
@@ -38,6 +41,19 @@ export const PatientIdentifierInformation = () => {
 
   const navigate = useNavigate();
   const { id } = useParams();
+  const { data: patient, isLoading } = useGetPatientQuery(id || "5080483241");
+
+  const displayName = patient
+    ? `${patient.firstName} ${patient.lastName}`.trim()
+    : "Ashley Testpatient";
+  const displayGender = patient?.gender || "Female";
+  const displayAge = patient?.age ? `${patient.age} Y.O.` : "33 Y.O.";
+  const displayDob = patient?.dob ? formatDOB(patient.dob) : "Aug 2, 1989";
+  const displayMrn = patient?.MRN || "3001330978";
+  const displayCsn = patient?.CBEN || id || "5080483241";
+  const displayUnit = patient?.deviceAssociated || "Room 302";
+  const displayImage = patient?.imageUrl || profile;
+
   return (
     <Container hasPadding={true} hasPaddingTop={false}>
       <PageWrapper>
@@ -52,7 +68,7 @@ export const PatientIdentifierInformation = () => {
         </HeaderSection>
         <PatientIdentifierInformationSection>
           <PatientImageWrapper>
-            <img src={profile} alt="patient" />
+            <img src={displayImage} alt="patient" />
           </PatientImageWrapper>
 
           <BasicInfoSection>
@@ -60,22 +76,22 @@ export const PatientIdentifierInformation = () => {
 
             <InfoRow>
               <span className="label">Patient Name</span>
-              <span className="value">Ashley Testpatient</span>
+              <span className="value">{isLoading ? "Loading..." : displayName}</span>
             </InfoRow>
 
             <InfoRow>
               <span className="label">Gender</span>
-              <span className="value">Female</span>
+              <span className="value">{displayGender}</span>
             </InfoRow>
 
             <InfoRow>
               <span className="label">Age</span>
-              <span className="value">33 Y.O.</span>
+              <span className="value">{displayAge}</span>
             </InfoRow>
 
             <InfoRow>
-              <span className="label">Date Of Brith</span>
-              <span className="value">Aug 2, 1989</span>
+              <span className="label">Date Of Birth</span>
+              <span className="value">{displayDob}</span>
             </InfoRow>
           </BasicInfoSection>
 
@@ -86,17 +102,17 @@ export const PatientIdentifierInformation = () => {
 
             <InfoRow>
               <span className="label">MRN</span>
-              <span className="value">3001330978</span>
+              <span className="value">{displayMrn}</span>
             </InfoRow>
 
             <InfoRow>
               <span className="label">CSN</span>
-              <span className="value">5088152596</span>
+              <span className="value">{displayCsn}</span>
             </InfoRow>
 
             <InfoRow>
               <span className="label">Unit</span>
-              <span className="value">Room 302</span>
+              <span className="value">{displayUnit}</span>
             </InfoRow>
           </AdditionalInfoSection>
         </PatientIdentifierInformationSection>

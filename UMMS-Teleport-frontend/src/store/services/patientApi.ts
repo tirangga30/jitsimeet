@@ -9,7 +9,7 @@ type UpdatePatientBody = Partial<Omit<Patient, "providers" | "families">> & {
 export const patientApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getPatients: builder.query<Patient[], void>({
-      query: () => "/patient",
+      query: () => "/patients",
 
       providesTags: ["Patient"],
     }),

@@ -38,15 +38,16 @@ import toast from 'react-hot-toast';
 
 const BandScan = () => {
   const navigate = useNavigate();
-  const [idBandNumber, setIdBandNumber] = useState<string>();
-  const handleAssociateDevice = () => {
-    const idLength = idBandNumber?.length;
+  const [idBandNumber, setIdBandNumber] = useState<string>('');
 
-    if (idBandNumber && idLength === 10) {
-      navigate(`/patient-identifier-information/5080483241`);
+  const handleAssociateDevice = (customBand?: string) => {
+    const targetId = (customBand || idBandNumber || '').trim();
+
+    if (targetId.length >= 6) {
+      navigate(`/patient-identifier-information/${targetId}`);
     } else {
       toast.dismiss();
-      errorMessage('Please enter ID Band Number or Scan the band!');
+      errorMessage('Please enter a valid ID Band Number or scan the band!');
     }
   };
 
@@ -62,9 +63,8 @@ const BandScan = () => {
             </HeaderMainPara>
           </HeaderMid>
           <HeaderRight>
-            .
-            <Button bgcolor='#027564' color='#FFFFFF'>
-              Need Help?
+            <Button bgcolor='#027564' color='#FFFFFF' onClick={() => setIdBandNumber('5080483241')}>
+              Sample CSN
             </Button>
           </HeaderRight>
         </HeaderSection>
@@ -73,11 +73,12 @@ const BandScan = () => {
           <FormLabel>Enter ID Band Number</FormLabel>
           <FormInput
             type='text'
-            min={10}
-            max={10}
             placeholder='Type CSN Number (eg. 5080483241)'
             value={idBandNumber}
             onChange={(e) => setIdBandNumber(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleAssociateDevice();
+            }}
           />
           <FormOR className='or'>Or</FormOR>
           <ScanSection>
@@ -92,11 +93,12 @@ const BandScan = () => {
                     constraints={{ facingMode: 'environment' }}
                     sound={false}
                     onScan={(result: IDetectedBarcode[]) => {
-                      if (result?.length > 0) {
-                        // console.log('Scanned:', result[0]?.rawValue);
+                      if (result?.length > 0 && result[0]?.rawValue) {
+                        const raw = result[0].rawValue.trim();
+                        setIdBandNumber(raw);
+                        handleAssociateDevice(raw);
                       }
                     }}
-                    // onError={(error) => console.log('Scanner Error:', error)}
                     styles={{
                       container: { width: '100%', height: '100%' },
                       video: {

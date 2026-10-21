@@ -105,6 +105,14 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
+          path="/meeting/:id"
+          element={
+            <PageTransition animation="scale">
+              <InviteAccept />
+            </PageTransition>
+          }
+        />
+        <Route
           path="/provider/:id"
           element={
             <PageTransition animation="scale">

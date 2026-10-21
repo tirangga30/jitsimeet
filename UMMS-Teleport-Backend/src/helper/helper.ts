@@ -17,13 +17,24 @@ export function buildJitsiJwt(input: BuildJitsiJwtInput): string {
   const appId = process.env.JITSI_APP_ID;
   if (!appId) throw new Error("JITSI_APP_ID is not set");
 
+  const baseUrl = process.env.JITSI_BASE_URL || "";
+  let domain = process.env.JITSI_DOMAIN || "";
+  if (!domain && baseUrl) {
+    try {
+      domain = new URL(baseUrl).hostname;
+    } catch {
+      domain = baseUrl.replace(/^https?:\/\//, "").split("/")[0] || "";
+    }
+  }
+  if (!domain) domain = "meet.example.com";
+
   const now = Math.floor(Date.now() / 1000);
   const isModerator = input.moderator ?? false;
 
   const payload = {
     aud: "jitsi",
-    iss: appId, // "bulmartech" — must match prosody app_id
-    sub: "meet.bulmartech.com", // your Jitsi domain
+    iss: appId,
+    sub: domain, // dynamic Jitsi domain
     room: input.room, // exact room id, or "*" for any room
     exp: now + 60 * 60 * 24, // 24 hour expiry
     nbf: now - 10,

@@ -217,18 +217,22 @@ export const FamilyAndFriend = () => {
 
     setIsSendingInvitation(true);
     try {
+      const backendBaseUrl =
+        import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:4000/api";
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_BASE_URL}/invitations/create`,
+        `${backendBaseUrl.replace(/\/+$/, "")}/invitations/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            patientId: id,
+            patientId: id || "5080483241",
             members: filterCheckedMembers.map((m) => ({
+              id: String(m.id),
               name: m.name,
               relation: m.relation,
-              mobile: m.mobile,
+              phone: m.mobile,
               email: m.email,
+              type: "family",
             })),
           }),
         },

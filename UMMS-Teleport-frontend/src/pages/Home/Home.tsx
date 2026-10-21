@@ -1,15 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import {
   PageWrapper,
   Card,
   LogoWrapper,
   Title,
   Description,
+  ActionsWrapper,
+  HomeActionButton,
   IllustrationWrapper,
 } from "./Home.styles";
 import logoImg from "../../assets/img/newlogo.png";
 import devicesIllustration from "../../assets/img/Group 625866.png";
 
 export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <PageWrapper>
       <Card>
@@ -23,10 +28,18 @@ export default function Home() {
 
         {/* Description */}
         <Description>
-          Your Teleport session has concluded. Thank you for trusting us with
-          your care. If you have any questions, please reach out to your care
-          team.
+          Connect securely with your healthcare team, family, and specialists through high-definition telehealth visits.
         </Description>
+
+        {/* Actions */}
+        <ActionsWrapper>
+          <HomeActionButton onClick={() => navigate("/band-scan")}>
+            Start Patient Visit
+          </HomeActionButton>
+          <HomeActionButton $variant="secondary" onClick={() => navigate("/band-scan")}>
+            Scan Patient Band
+          </HomeActionButton>
+        </ActionsWrapper>
 
         {/* Devices Illustration */}
         <IllustrationWrapper>

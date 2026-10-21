@@ -29,7 +29,10 @@ import { updateFamilyAndFriends } from "../services/family-friends.service";
 const EMR_URL = process.env.EMR_URL!;
 
 config();
-const JITSI_DOMAIN = process.env.JITSI_BASE_URL || "meet.bulmartech.com";
+const rawJitsiUrl = process.env.JITSI_BASE_URL || "https://meet.example.com";
+const JITSI_DOMAIN = rawJitsiUrl.startsWith("http")
+  ? rawJitsiUrl.replace(/\/+$/, "")
+  : `https://${rawJitsiUrl.replace(/\/+$/, "")}`;
 
 function inviteeToParticipant(invitee: Invitee): MeetingParticipant {
   return {
@@ -173,10 +176,15 @@ export async function createInvitationsController(
   );
 
   // Send SMS to each invitee
+  const frontendUrl =
+    process.env.FRONTEND_URL ||
+    (req.headers.origin as string) ||
+    "http://localhost:5173";
+
   const smsPromises = batch.invitees.map(async (invitee) => {
     if (!invitee.phone) return;
 
-    const inviteLink = `https://bulmartech.com/meeting/${patientId}?room=${batch.roomId}&inviteId=${invitee.inviteId}&moderator=false`;
+    const inviteLink = `${frontendUrl.replace(/\/+$/, "")}/invite/accept?inviteId=${invitee.inviteId}&room=${encodeURIComponent(batch.roomId)}`;
     const message = `Hello ${invitee.name}, you have been invited to a medical consultation. Join here: ${inviteLink}`;
     console.log(message);
 
