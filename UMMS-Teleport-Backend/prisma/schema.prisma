@@ -1,0 +1,122 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Meeting {
+  id        String   @id @default(uuid())
+  roomId    String   @unique
+  patientId String
+  createdAt DateTime @default(now())
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, createdAt(sort: Desc), id(sort: Desc)])
+}
+
+model InvitationBatchRecord {
+  inviteBatchId   String   @id
+  patientId       String
+  roomId          String
+  meetingUrl      String
+  status          String
+  invitedAt       DateTime
+  acceptedBy      String?
+  acceptedAt      DateTime?
+  waitingStartedAt DateTime?
+  doctorPhone     String?
+  invitees        Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([patientId, status])
+}
+
+model PatientProvider {
+  patientId  String
+  providerId String
+  patient    Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  provider   ProviderAndStaff @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@id([patientId, providerId])
+}
+
+model PatientFamily {
+  patientId String
+  familyId  String
+  family    FamilyAndFriends @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  patient   Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@id([patientId, familyId])
+}
+
+model ProviderAndStaff {
+  id          String            @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String            @unique
+  phone       String            @unique
+  designation String
+  department  String?
+  providerType String?
+  location    String?
+  status      String
+  invite      Boolean           @default(false)
+  inviteId    String?
+  patients    PatientProvider[]
+}
+
+model FamilyAndFriends {
+  id        String          @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String          @unique
+  phone     String          @unique
+  relation  String
+  status    String
+  invite    Boolean         @default(false)
+  inviteId  String?
+  patients  PatientFamily[]
+}
+
+model Patient {
+  id               String            @id @default(uuid())
+  firstName        String
+  lastName         String
+  dob              DateTime
+  medicareNumber   String
+  phone            String
+  createdAt        DateTime          @default(now())
+  CBEN             String
+  MRN              String
+  age              Int
+  currentStatus    String
+  deviceAssociated String
+  gender           Gender
+  imageUrl         String?
+  meetings         Meeting[]
+  families         PatientFamily[]
+  providers        PatientProvider[]
+  emrImages        EmrImage[]
+}
+
+model EmrImage {
+  id        String   @id @default(uuid())
+  patientId String
+  imageUrl  String
+  fileName  String
+  sendToEMR Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}

@@ -1,0 +1,51 @@
+{
+  "name": "umms-inpatient-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "NODE_OPTIONS=--use-openssl-ca tsx watch src/index.ts",
+    "swagger": "tsx src/swagger-server.ts",
+    "build": "tsc",
+    "start": "node --use-openssl-ca dist/index.js",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1078.0",
+    "@aws-sdk/s3-request-presigner": "^3.1078.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@types/multer": "^2.2.0",
+    "axios": "^1.16.0",
+    "cors": "^2.8.6",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "pg": "^8.22.0",
+    "swagger-ui-express": "^5.0.1",
+    "ws": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.5",
+    "@types/pg": "^8.20.0",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/ws": "^8.18.1",
+    "prisma": "^7.8.0",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.3"
+  }
+}
