@@ -3,7 +3,7 @@ import { CommonIcon } from "../Icon/Icon.styles";
 
 export const FooterBar = styled.footer`
   width: 100%;
-  background: ${({ theme }) => theme.colors.secondary};
+  background: ${({ theme }) => theme.colors.navy};
 
   display: flex;
   align-items: center;

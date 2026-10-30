@@ -81,10 +81,13 @@ const MobileFooter = () => {
     // navigate(`/${userId}/family-and-friend`);
   };
 
+  if (currentRoute !== "video-call") {
+    return null;
+  }
+
   return (
     <MobileFooterBar>
-      {currentRoute === "video-call" && (
-        <MidSection>
+      <MidSection>
           <MenuBar gap={"30px"}>
             <MenuItem
               onClick={() => dispatch(videoCallActions.handleMicOn(!micOn))}
@@ -157,7 +160,6 @@ const MobileFooter = () => {
             </MenuItem>
           </MenuBar>
         </MidSection>
-      )}
     </MobileFooterBar>
   );
 };

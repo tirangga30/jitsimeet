@@ -12,8 +12,12 @@ import {
   NavTimerLabel,
   NavTimerValue,
   Badge,
+  NavBrandGroup,
+  HelpButton,
+  HelpIconCircle,
 } from "./Navbar.styles";
 import logo from "../../assets/img/newlogo.png";
+import teleportLogo from "../../assets/img/TeleportLogo.png";
 import participantIcon from "../../assets/icons/participants.png";
 import chatIcon from "../../assets/icons/chat.png";
 import uploadIcon from "../../assets/icons/upload.png";
@@ -146,76 +150,107 @@ const DesktopNav = () => {
     dispatch(globalActions.handleShowPanel("none"));
   };
 
+  const isCall = currentRoute === "video-call";
+
+  const handleHelpClick = () => {
+    toast(
+      "UMMS Teleport: If you need assistance, please contact your care team or floor nurse.",
+      {
+        icon: "ℹ️",
+        duration: 4000,
+        style: {
+          borderRadius: "10px",
+          background: "#009F95",
+          color: "#fff",
+          fontSize: "14px",
+          fontWeight: 500,
+        },
+      },
+    );
+  };
+
   return (
-    <Nav>
-      <Logo src={logo} />
+    <Nav $isCall={isCall}>
+      {isCall ? (
+        <>
+          <Logo src={logo} alt="UMMS Teleport" />
 
-      {currentRoute === "video-call" && callType === "provider" && (
-        <NavCenter>
-          <NavTimerLabel>My Time</NavTimerLabel>
-          <NavTimerValue>{meetingDuration}</NavTimerValue>
-        </NavCenter>
-      )}
-
-      {currentRoute === "video-call" ? (
-        <MenuBar>
-          {/* Participants */}
-          <MenuItem
-            $active={panel === "participants"}
-            onClick={() => handleShowPanel("participants")}
-          >
-            <MenuIcon
-              src={participantIcon}
-              alt="participant"
-              width={26}
-              height={18}
-            />
-            <MenuLabel>Participants</MenuLabel>
-          </MenuItem>
-
-          {/* Chat */}
-          <MenuItem
-            $active={panel === "chat"}
-            onClick={() => handleShowPanel("chat")}
-          >
-            <div style={{ position: "relative", display: "inline-flex" }}>
-              <MenuIcon src={chatIcon} alt="chat" width={22} height={20} />
-              {unreadCount > 0 && (
-                <Badge>{unreadCount > 9 ? "9+" : unreadCount}</Badge>
-              )}
-            </div>
-            <MenuLabel>Chats</MenuLabel>
-          </MenuItem>
-
-          {/* Desktop layout switching is always available. */}
-          <MenuItem onClick={handleLayout} title="Change layout">
-            <MenuIcon src={layoutIcon} alt="layout" width={20} height={20} />
-            <MenuLabel>Layout</MenuLabel>
-          </MenuItem>
-
-          {/* EMR / Upload — provider only */}
           {callType === "provider" && (
-            <MenuItem
-              onClick={() => dispatch(globalActions.handleShowUploadModel(true))}
-            >
-              <MenuIcon src={uploadIcon} alt="upload" width={21} height={20} />
-              <MenuLabel>{isPadApp ? "Upload" : "EMR"}</MenuLabel>
-            </MenuItem>
+            <NavCenter>
+              <NavTimerLabel>My Time</NavTimerLabel>
+              <NavTimerValue>{meetingDuration}</NavTimerValue>
+            </NavCenter>
           )}
 
-          {/* More — desktop only */}
-          {!isPadApp && (
+          <MenuBar>
+            {/* Participants */}
             <MenuItem
-              $active={panel === "more"}
-              onClick={() => handleShowPanel("more")}
+              $active={panel === "participants"}
+              onClick={() => handleShowPanel("participants")}
             >
-              <MenuIcon src={moreIcon} alt="more" width={28} height={20} />
-              <MenuLabel>More</MenuLabel>
+              <MenuIcon
+                src={participantIcon}
+                alt="participant"
+                width={26}
+                height={18}
+              />
+              <MenuLabel>Participants</MenuLabel>
             </MenuItem>
-          )}
-        </MenuBar>
+
+            {/* Chat */}
+            <MenuItem
+              $active={panel === "chat"}
+              onClick={() => handleShowPanel("chat")}
+            >
+              <div style={{ position: "relative", display: "inline-flex" }}>
+                <MenuIcon src={chatIcon} alt="chat" width={22} height={20} />
+                {unreadCount > 0 && (
+                  <Badge>{unreadCount > 9 ? "9+" : unreadCount}</Badge>
+                )}
+              </div>
+              <MenuLabel>Chats</MenuLabel>
+            </MenuItem>
+
+            {/* Desktop layout switching is always available. */}
+            <MenuItem onClick={handleLayout} title="Change layout">
+              <MenuIcon src={layoutIcon} alt="layout" width={20} height={20} />
+              <MenuLabel>Layout</MenuLabel>
+            </MenuItem>
+
+            {/* EMR / Upload — provider only */}
+            {callType === "provider" && (
+              <MenuItem
+                onClick={() => dispatch(globalActions.handleShowUploadModel(true))}
+              >
+                <MenuIcon src={uploadIcon} alt="upload" width={21} height={20} />
+                <MenuLabel>{isPadApp ? "Upload" : "EMR"}</MenuLabel>
+              </MenuItem>
+            )}
+
+            {/* More — desktop only */}
+            {!isPadApp && (
+              <MenuItem
+                $active={panel === "more"}
+                onClick={() => handleShowPanel("more")}
+              >
+                <MenuIcon src={moreIcon} alt="more" width={28} height={20} />
+                <MenuLabel>More</MenuLabel>
+              </MenuItem>
+            )}
+          </MenuBar>
+        </>
       ) : (
-        <Version>Version: 1.00</Version>
+        <>
+          <NavBrandGroup>
+            <Logo src={teleportLogo} alt="UMMS Teleport Logo" style={{ height: "42px" }} />
+            <Version>Version: 1.00</Version>
+          </NavBrandGroup>
+
+          <HelpButton type="button" onClick={handleHelpClick}>
+            <HelpIconCircle>?</HelpIconCircle>
+            {location.pathname.includes("family-and-friend") ? "More Info !" : "Need Help?"}
+          </HelpButton>
+        </>
       )}
     </Nav>
   );

@@ -1,17 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Card,
-  Footer,
-  Heading,
-  Illustration,
   InviteAcceptContainer,
-  Logo,
-  Message,
-  TimerBox,
-  TimerText,
+  ContentCard,
+  BrandLogo,
+  PageTitle,
+  TimerCard,
+  DigitalClock,
+  DoctorIllustration,
+  StatusMessage,
+  SmsReminderButton,
+  InfoDivider,
+  InfoList,
+  InfoRow,
+  InfoIconCircle,
+  ErrorStateWrapper,
+  ErrorHeading,
+  ErrorDescription,
+  HomeButton,
 } from "./InviteAccept.styles";
-import logo from "../../assets/img/newlogo.png";
+import logo from "../../assets/img/logo.png";
 import waitingIcon from "../../assets/img/waiting-icon.png";
+import PageDecorations from "../../components/PageDecorations/PageDecorations";
+import { UnableToJoinIllustration } from "../../components/Illustrations/StatusIllustrations";
 import DevicePreview from "../../components/DevicePreview/DevicePreview";
 import { MobileJoinMeeting } from "../JoinMeeting/MobileJoinMeeting";
 import { useDevice } from "../../hooks/useDevice";
@@ -30,7 +40,7 @@ export default function InviteAccept() {
   const [inviteeType, setInviteeType] = useState<string>("family");
   const [roomId, setRoomId] = useState("");
   const reminderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [showNudgeButton, setShowNudgeButton] = useState(false);
+  const [showNudgeButton, setShowNudgeButton] = useState(true); // available in waiting room
   const [nudgeSending, setNudgeSending] = useState(false);
   const [nudgeSentCount, setNudgeSentCount] = useState<number | null>(null);
 
@@ -72,8 +82,6 @@ export default function InviteAccept() {
     return params.get("inviteId");
   }, []);
 
-  // Guests wait first. Device preview is only available after the provider
-  // announces that they have joined the waiting room.
   const showPreview = isDoctorJoined && !hasJoinedPreview;
 
   useEffect(() => {
@@ -86,7 +94,6 @@ export default function InviteAccept() {
     }
   }, [role, inviteBatchIdParam, roomParam, meetingUrlParam]);
 
-  //Show nudge button after 3 min (provider only)
   useEffect(() => {
     if (role !== "provider" || !inviteBatchId || isDoctorJoined) return;
 
@@ -97,7 +104,6 @@ export default function InviteAccept() {
     return () => clearTimeout(timer);
   }, [role, inviteBatchId, isDoctorJoined]);
 
-  // Countdown starts as soon as either role enters the waiting-room flow.
   useEffect(() => {
     if (!inviteBatchId) return;
 
@@ -115,7 +121,6 @@ export default function InviteAccept() {
 
   const wsRef = useRef<WebSocket | null>(null);
 
-  // WebSocket: listen for events
   useEffect(() => {
     if (!inviteBatchId) return;
 
@@ -124,7 +129,6 @@ export default function InviteAccept() {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.warn("WS connected to waiting room");
       if (role === "provider") {
         ws.send(JSON.stringify({ event: "doctor_joined" }));
         setIsDoctorJoined(true);
@@ -143,7 +147,6 @@ export default function InviteAccept() {
 
     ws.onmessage = (message) => {
       const data = JSON.parse(message.data);
-      console.warn("WS received:", data);
 
       if (role === "provider") {
         if (data.event === "guest_waiting" || data.event === "guest_joined") {
@@ -156,16 +159,9 @@ export default function InviteAccept() {
           reminderTimerRef.current = null;
         }
       }
-
-      // Patient/guardian gating is currently disabled. Enabling this would
-      // keep everyone waiting until the backend emits `meeting_ready`.
-      // if (data.event === "meeting_ready") {
-      //   setIsDoctorJoined(true);
-      // }
     };
 
     ws.onclose = () => {
-      console.warn("WS closed");
       wsRef.current = null;
     };
 
@@ -175,17 +171,14 @@ export default function InviteAccept() {
     };
   }, [inviteBatchId, role]);
 
-  //Schedule 3-minute reminder once inviteBatchId is known
   useEffect(() => {
     if (role === "provider" || !inviteBatchId || isDoctorJoined) return;
 
-    // Clear any existing timer before scheduling a new one
     if (reminderTimerRef.current) {
       clearTimeout(reminderTimerRef.current);
     }
 
     reminderTimerRef.current = setTimeout(async () => {
-      // Double-check: if doctor already joined by now, skip
       if (isDoctorJoined) return;
 
       try {
@@ -201,7 +194,7 @@ export default function InviteAccept() {
           },
         );
       } catch {
-        // Silently ignore — reminder is best-effort
+        // Silently ignore
       }
     }, REMINDER_DELAY_MS);
 
@@ -213,14 +206,8 @@ export default function InviteAccept() {
     };
   }, [inviteBatchId, isDoctorJoined, inviteeName, role]);
 
-  // Redirect to the video call after the provider is ready and device preview
-  // has been completed.
   useEffect(() => {
-    if (
-      isDoctorJoined &&
-      meetingUrl &&
-      hasJoinedPreview
-    ) {
+    if (isDoctorJoined && meetingUrl && hasJoinedPreview) {
       if (meetingUrl.includes("/video-call")) {
         const separator = meetingUrl.includes("?") ? "&" : "?";
         const cameraDeviceParam = cameraDeviceId
@@ -276,10 +263,7 @@ export default function InviteAccept() {
           role === "provider" ? "provider" : inviteeType,
         )}&cameraOn=${cameraOnVal}&micOn=${micOnVal}${cameraDeviceParam}${micDeviceParam}`;
       } catch (e) {
-        console.error(
-          "Failed to construct wrap video call url, falling back",
-          e,
-        );
+        console.error("Failed to construct wrap video call url", e);
       }
 
       window.location.replace(redirectUrl);
@@ -301,10 +285,8 @@ export default function InviteAccept() {
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  //Accept the invite on mount
   useEffect(() => {
     if (role === "provider" || !inviteId) {
-      console.warn("[InviteAccept] Skipped accept call:", { role, inviteId });
       if (!inviteId && role !== "provider") {
         setErrorMsg("Missing inviteId parameter in URL.");
         setIsChecking(false);
@@ -313,11 +295,8 @@ export default function InviteAccept() {
     }
 
     const acceptInvite = async () => {
-      console.warn("[InviteAccept] Fetching accept API for inviteId:", inviteId);
-      console.warn("[InviteAccept] Backend URL:", import.meta.env.VITE_BACKEND_BASE_URL);
       try {
         const apiUrl = `${import.meta.env.VITE_BACKEND_BASE_URL}/invitations/accept`;
-        console.warn("[InviteAccept] Full Request URL:", apiUrl);
 
         const res = await fetch(apiUrl, {
           method: "POST",
@@ -325,24 +304,19 @@ export default function InviteAccept() {
           body: JSON.stringify({ inviteId }),
         });
 
-        console.warn("[InviteAccept] Response Status:", res.status, res.statusText);
-
         if (!res.ok) {
           const errText = await res.text().catch(() => "");
-          console.error("[InviteAccept] Accept API returned non-200:", res.status, errText);
-          setErrorMsg(`Failed to verify invitation. Server status: ${res.status} (${errText || res.statusText})`);
+          setErrorMsg(`Failed to verify invitation. (${errText || res.statusText})`);
           return;
         }
 
         const data = await res.json();
-        console.warn("[InviteAccept] Accept API Response Data:", data);
 
         if (
           data.status === "concluded" ||
           data.status === "expired" ||
           !data?.meetingUrl
         ) {
-          console.warn("[InviteAccept] Invalid meeting status or missing meetingUrl:", data);
           setErrorMsg(`Invitation is ${data.status || "invalid"} or missing meeting URL.`);
           return;
         }
@@ -366,8 +340,6 @@ export default function InviteAccept() {
         );
         setMeetingUrl(data.meetingUrl);
 
-        // Opening an invite places the guest in the waiting room immediately.
-        // The WebSocket sends this as soon as its connection is ready.
         if (data.inviteBatchId) {
           pendingGuestWaitingRef.current = {
             inviteBatchId: data.inviteBatchId,
@@ -376,7 +348,6 @@ export default function InviteAccept() {
           };
         }
       } catch (err: unknown) {
-        console.error("[InviteAccept] Accept API Fetch Error:", err);
         const errMsg = err instanceof Error ? err.message : String(err);
         setErrorMsg(`Network error connecting to backend: ${errMsg}`);
       } finally {
@@ -420,103 +391,48 @@ export default function InviteAccept() {
     cameraDeviceId?: string;
     micDeviceId?: string;
   }) => {
-    // Keep a dedicated transition screen visible while the redirect effect
-    // builds the final meeting URL and navigates away.
     setIsJoiningMeeting(true);
     setVideoEnabled(camOn);
     setMicEnabled(micOn);
     setCameraDeviceId(camDeviceId || "");
     setMicDeviceId(micDevId || "");
-
     setHasJoinedPreview(true);
   };
 
   return (
     <InviteAcceptContainer>
+      <PageDecorations />
+
       {errorMsg ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "16px",
-            height: "100vh",
-            padding: "24px",
-            textAlign: "center",
-            color: "#ffffff",
-          }}
-        >
-          <img src={logo} alt="UMMS Teleport" style={{ width: 180, marginBottom: 8 }} />
-          <div
-            style={{
-              background: "rgba(255, 77, 79, 0.15)",
-              border: "1px solid #ff4d4f",
-              borderRadius: "12px",
-              padding: "20px 24px",
-              maxWidth: "420px",
-              width: "100%",
-            }}
-          >
-            <h3 style={{ margin: "0 0 8px 0", color: "#ff7875", fontSize: "18px" }}>
-              Unable to Join Meeting
-            </h3>
-            <p style={{ margin: 0, fontSize: "14px", color: "rgba(255, 255, 255, 0.85)", wordBreak: "break-word" }}>
-              {errorMsg}
-            </p>
-          </div>
-          <button
-            onClick={() => window.location.replace("/")}
-            style={{
-              marginTop: "16px",
-              padding: "10px 24px",
-              background: "#027564",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
+        <ErrorStateWrapper>
+          <BrandLogo src={logo} alt="UMMS Teleport" />
+          <UnableToJoinIllustration size={220} />
+          <ErrorHeading>Unable to Join Meeting</ErrorHeading>
+          <ErrorDescription>{errorMsg}</ErrorDescription>
+          <HomeButton type="button" onClick={() => window.location.replace("/")}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
             Go to Home
-          </button>
-        </div>
+          </HomeButton>
+        </ErrorStateWrapper>
       ) : isChecking || isJoiningMeeting ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "20px",
-            height: "100vh",
-          }}
-        >
-          <img
-            src={logo}
-            alt="UMMS Teleport"
-            style={{ width: 200, marginBottom: 12 }}
-          />
+        <ContentCard>
+          <BrandLogo src={logo} alt="UMMS Teleport" />
           <LoaderSpinner
             style={{
-              borderTopColor: "#ffffff",
-              width: 48,
-              height: 48,
+              borderTopColor: "#009F95",
+              width: 52,
+              height: 52,
               borderWidth: 5,
+              margin: "24px 0 16px 0",
             }}
           />
-          <p
-            style={{
-              color: "rgba(255,255,255,0.8)",
-              fontSize: 15,
-              marginTop: 8,
-            }}
-          >
-            {isJoiningMeeting
-              ? "Joining your meeting…"
-              : "Verifying your invite link…"}
+          <p style={{ color: "#667A9B", fontSize: 16, fontWeight: 500 }}>
+            {isJoiningMeeting ? "Joining your meeting…" : "Verifying your invite link…"}
           </p>
-        </div>
+        </ContentCard>
       ) : showPreview ? (
         isMobile ? (
           <MobileJoinMeeting
@@ -531,9 +447,11 @@ export default function InviteAccept() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              position: "relative",
+              zIndex: 1,
             }}
           >
-            <Logo src={logo} alt="logo" />
+            <BrandLogo src={logo} alt="UMMS Teleport" />
             <DevicePreview
               heading={`Join the meeting as ${inviteeName || "Guest"}`}
               buttonLabel="Join Meeting"
@@ -542,68 +460,51 @@ export default function InviteAccept() {
           </div>
         )
       ) : (
-        <Card>
-          <Logo src={logo} />
+        /* Waiting Room Layout */
+        <ContentCard>
+          <BrandLogo src={logo} alt="UMMS Teleport" />
 
-          <Heading>WAITING ROOM</Heading>
+          <PageTitle>WAITING ROOM</PageTitle>
 
-          <TimerBox isMobile={isMobile}>
-            <TimerText>{formatTime(timeLeft)}</TimerText>
-            {!isMobile && <Illustration src={waitingIcon} />}
-          </TimerBox>
+          <TimerCard $isMobile={isMobile}>
+            <DigitalClock>{formatTime(timeLeft)}</DigitalClock>
+            {!isMobile && (
+              <DoctorIllustration src={waitingIcon} alt="Healthcare provider at desk" />
+            )}
+          </TimerCard>
 
-          <Message>
+          <StatusMessage>
             {role === "provider" ? (
               <>
-                Waiting for patients or family members to join.{' '}
-                <b>Please wait....</b>
+                Waiting for patients or family members to join. <b>Please wait...</b>
               </>
             ) : (
               <>
-                The provider has not yet joined. <b>Please wait....</b>
+                The provider has not yet joined. <b>Please wait...</b>
               </>
             )}
-          </Message>
+          </StatusMessage>
 
-          {role === "provider" && showNudgeButton && (
-            <div style={{ width: "100%", marginBottom: "16px" }}>
-              <button
+          {showNudgeButton && (
+            <div style={{ width: "100%", marginBottom: "8px" }}>
+              <SmsReminderButton
+                type="button"
                 onClick={handleNudgeGuests}
                 disabled={nudgeSending}
-                style={{
-                  width: "100%",
-                  padding: "14px 20px",
-                  background: nudgeSending ? "#6b8fa3" : "#027564",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: "8px",
-                  fontSize: "15px",
-                  fontWeight: 700,
-                  cursor: nudgeSending ? "not-allowed" : "pointer",
-                  letterSpacing: "0.3px",
-                  transition: "all 0.25s ease",
-                  boxShadow: nudgeSending
-                    ? "none"
-                    : "0 4px 14px rgba(2, 117, 100, 0.35)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                }}
               >
-                {nudgeSending ? (
-                  <>⏳ Sending SMS reminders…</>
-                ) : (
-                  <>📩 Send SMS Reminder to Guests</>
-                )}
-              </button>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                {nudgeSending ? "Sending SMS reminders…" : "Send SMS Reminder to Guests"}
+              </SmsReminderButton>
               {nudgeSentCount !== null && (
                 <p
                   style={{
                     textAlign: "center",
-                    marginTop: "10px",
+                    marginTop: "8px",
                     fontSize: "13px",
-                    color: nudgeSentCount > 0 ? "#7de8c8" : "#f9a8a8",
+                    color: nudgeSentCount > 0 ? "#009F95" : "#EF4444",
                     fontWeight: 600,
                   }}
                 >
@@ -615,15 +516,36 @@ export default function InviteAccept() {
             </div>
           )}
 
-          <Footer $isMobile={isMobile}>
-            <p>Room ID : {roomId}</p>
-            <p>
-              {role === "provider"
-                ? "Role : Provider / Doctor"
-                : `Guest Name : ${inviteeName || "SM UMMS Email"}`}
-            </p>
-          </Footer>
-        </Card>
+          <InfoDivider />
+
+          <InfoList>
+            <InfoRow>
+              <InfoIconCircle>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+              </InfoIconCircle>
+              <span>Room ID : </span>
+              <span className="val">{roomId || "demo-room"}</span>
+            </InfoRow>
+
+            <InfoRow>
+              <InfoIconCircle>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </InfoIconCircle>
+              <span>Role : </span>
+              <span className="val">
+                {role === "provider"
+                  ? "Provider / Doctor"
+                  : `Guest : ${inviteeName || "Family / Friend"}`}
+              </span>
+            </InfoRow>
+          </InfoList>
+        </ContentCard>
       )}
     </InviteAcceptContainer>
   );

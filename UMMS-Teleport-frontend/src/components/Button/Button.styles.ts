@@ -47,16 +47,16 @@ export const StyledButton = styled.button.attrs<{
   $hoverBg?: string;
   $hoverBorder?: string;
 }>`
-  padding: ${(props) => props.padding || "0 18px"};
-  border-radius: 4px;
+  padding: ${(props) => props.padding || "0 20px"};
+  border-radius: 10px;
   margin: ${(props) => props.margin};
   ${(props) => props.width && `width: ${props.width};`}
-  height: clamp(40px, 5.5vh, 48px);
+  height: clamp(42px, 5.5vh, 48px);
   min-height: 44px; /* WCAG minimum tap target height */
   cursor: pointer;
   color: ${(props) => props.color};
   font-size: clamp(13px, 1.6vw, 15px);
-  font-weight: ${({ theme }) => theme.weight.bold};
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,10 +65,25 @@ export const StyledButton = styled.button.attrs<{
   background-color: ${(props) => props.bgcolor};
   border: ${(props) => props.border};
   white-space: nowrap;
-  transition: background-color 0.2s ease, border 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(16, 27, 75, 0.04);
+
   &:hover {
-    background-color: ${(props) => props.$hoverBg || "#004F43"};
-    border: ${(props) => props.$hoverBorder || "none"};
+    background-color: ${(props) => props.$hoverBg || props.bgcolor};
+    border: ${(props) => props.$hoverBorder || props.border};
+    box-shadow: 0 4px 12px rgba(16, 27, 75, 0.08);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(16, 27, 75, 0.06);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 
   /* Responsive adjustment for small devices */

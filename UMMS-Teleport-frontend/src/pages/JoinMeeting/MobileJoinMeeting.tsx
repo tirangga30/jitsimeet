@@ -12,7 +12,7 @@ import {
   MobileDropdownWrapper,
   MobileSelectRow,
 } from "./MobileJoinMeeting.styles";
-import logo from "../../assets/img/newlogo.png";
+import logo from "../../assets/img/logo.png";
 import voiceIcon from "../../assets/icons/white/Voice.png";
 import micIcon from "../../assets/icons/Mute Unmute.png";
 import videoIcon from "../../assets/icons/video.png";

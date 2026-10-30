@@ -12,18 +12,19 @@ export const ProviderHeader = styled.div`
   position: sticky;
   top: 0;
   z-index: 100;
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  padding: 2px;
+  background: ${({ theme }) => theme.colors.white};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.navy};
+  padding: 10px 20px;
   text-align: center;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(16, 27, 75, 0.04);
 
   h1 {
     margin: 0;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: -0.3px;
   }
 `;
 

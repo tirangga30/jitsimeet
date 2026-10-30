@@ -41,7 +41,7 @@ import {
   DeviceConfirmationActions,
 } from "./Provider.styles";
 import { useState, useEffect, type FormEvent } from "react";
-import logo from "../../../assets/img/newlogo.png";
+import logo from "../../../assets/img/logo.png";
 import userImg from "../../../assets/img/profile.jpg";
 import tigerLogo from "../../../assets/icons/tiger-logo.svg";
 import sendIcon from "../../../assets/icons/send.png";
@@ -432,7 +432,7 @@ const Provider = () => {
       })();
 
     const roomMatch = callUrl.match(
-      /(?:https?:\/\/[^/]+\/|room=)([^?&/]+)/,
+      /(?:meet\.bulmartech\.com\/|room=)([^?&/]+)/,
     );
     const actualRoom = roomMatch ? roomMatch[1] : roomName;
 

@@ -10,6 +10,7 @@ import {
 } from "./Connecting.styles";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../store/hooks";
+import PageDecorations from "../../components/PageDecorations/PageDecorations";
 import {
   selectCallType,
   selectMeetingUrl,
@@ -40,6 +41,7 @@ export default function Connecting() {
 
   return (
     <Container hasPadding={true}>
+      <PageDecorations />
       <PageWrapper>
         <CounterContainer>
           {callType === "family" && (

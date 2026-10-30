@@ -125,6 +125,11 @@ const DesktopFooter = () => {
     const interval = setInterval(fetchBattery, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  if (!isPadAPP && currentRoute !== "video-call") {
+    return null;
+  }
+
   return (
     <FooterBar>
       {isPadAPP && (

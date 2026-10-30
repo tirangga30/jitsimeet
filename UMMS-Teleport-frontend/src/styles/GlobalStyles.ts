@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+import bgNew from "../assets/img/refactor/bgnew.jpeg";
 
 export const GlobalStyles = createGlobalStyle`
   * {
@@ -36,21 +37,43 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   /* Prevent auto-zoom on input focus on iOS Safari */
-  input, select, textarea {
-    font-size: 16px;
+  input, select, textarea, button {
+    font-size: 16px !important;
   }
 
   body {
-    /* font-family: "Helvetica", "Arial", sans-serif; */
-    font-family: "Helvetica";
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: ${({ theme }) => theme.colors.text};
-    background-color: #ffffff;
+    background: url(${bgNew}) no-repeat center center fixed;
+    background-size: cover;
+    background-color: #F4F9FD;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  h1 { font-size: ${({ theme }) => theme.typography.h1}; }
-  h2 { font-size: ${({ theme }) => theme.typography.h2}; }
-  h3 { font-size: ${({ theme }) => theme.typography.h3}; }
-  body, p { font-size: ${({ theme }) => theme.typography.body}; }
-  small { font-size: ${({ theme }) => theme.typography.small}; }
+  h1 { 
+    font-size: ${({ theme }) => theme.typography.h1}; 
+    color: ${({ theme }) => theme.colors.navy};
+    font-weight: 700;
+  }
+  h2 { 
+    font-size: ${({ theme }) => theme.typography.h2}; 
+    color: ${({ theme }) => theme.colors.navy};
+    font-weight: 700;
+  }
+  h3 { 
+    font-size: ${({ theme }) => theme.typography.h3}; 
+    color: ${({ theme }) => theme.colors.navy};
+    font-weight: 600;
+  }
+  body, p { 
+    font-size: ${({ theme }) => theme.typography.body}; 
+    color: ${({ theme }) => theme.colors.text};
+    line-height: 1.5;
+  }
+  small { 
+    font-size: ${({ theme }) => theme.typography.small}; 
+    color: ${({ theme }) => theme.colors.secondaryText};
+  }
 
  
   .pointer{

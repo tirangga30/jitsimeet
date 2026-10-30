@@ -1,22 +1,20 @@
 import styled from "styled-components";
-import bgImage from "../../assets/img/9508803_26807 1.png";
+import bgNew from "../../assets/img/refactor/bgnew.jpeg";
 
 export const PageWrapper = styled.div`
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
-  background-image: url(${bgImage});
-  background-color: #0c7a5c;
-  background-blend-mode: multiply;
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+  padding: 40px 24px;
+  background: url(${bgNew}) no-repeat center center fixed;
+  background-size: cover;
+  position: relative;
+  overflow-y: auto;
+  box-sizing: border-box;
 `;
 
 export const Card = styled.div`
@@ -26,63 +24,70 @@ export const Card = styled.div`
   text-align: center;
   width: 100%;
   max-width: 560px;
+  position: relative;
+  z-index: 1;
 `;
 
 export const LogoWrapper = styled.div`
-  margin-bottom: 48px;
+  margin-bottom: 24px;
 
   img {
-    height: clamp(48px, 10vw, 72px);
+    height: 48px;
     width: auto;
     object-fit: contain;
   }
 `;
 
+export const IllustrationContainer = styled.div`
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+`;
+
 export const ErrorCode = styled.p`
-  color: rgba(255, 255, 255, 0.5);
-  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: ${({ theme }) => theme.colors.secondaryText};
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  margin: 0 0 16px 0;
+  margin: 0 0 10px 0;
 `;
 
 export const Title = styled.h1`
-  color: #ffffff;
-  font-size: clamp(2rem, 6vw, 3rem);
+  color: ${({ theme }) => theme.colors.navy};
+  font-size: clamp(24px, 4vw, 34px);
   font-weight: 800;
-  margin: 0 0 16px 0;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.4px;
 `;
 
 export const Description = styled.p`
-  color: rgba(255, 255, 255, 0.75);
-  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
-  margin: 0 0 40px 0;
-  line-height: 1.65;
-  max-width: 420px;
+  color: ${({ theme }) => theme.colors.secondaryText};
+  font-size: 15px;
+  margin: 0 0 28px 0;
+  line-height: 1.6;
+  max-width: 440px;
 `;
 
 export const BackButton = styled.button`
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.15);
+  padding: 12px 30px;
+  background: ${({ theme }) => theme.colors.primaryTeal};
   color: #ffffff;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  border-radius: 12px;
-  padding: 14px 28px;
-  font-size: 1rem;
+  border: none;
+  border-radius: 24px;
+  font-size: 15px;
   font-weight: 600;
-  font-family: inherit;
   cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 159, 149, 0.28);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.6);
+    background: ${({ theme }) => theme.colors.darkTeal};
+    box-shadow: 0 6px 18px rgba(0, 159, 149, 0.38);
     transform: translateY(-1px);
   }
 

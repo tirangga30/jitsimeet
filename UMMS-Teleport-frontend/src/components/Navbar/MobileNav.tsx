@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { Logo, Badge, Version } from "./Navbar.styles";
+import {
+  Nav,
+  Logo,
+  Badge,
+  Version,
+  NavBrandGroup,
+  HelpButton,
+  HelpIconCircle,
+} from "./Navbar.styles";
 import logo from "../../assets/icons/Teleport Logo 1.png";
+import teleportLogo from "../../assets/img/TeleportLogo.png";
 import participantIcon from "../../assets/icons/participants.png";
 import chatIcon from "../../assets/icons/chat.png";
 import uploadIcon from "../../assets/icons/upload.png";
@@ -136,6 +145,41 @@ const MobileNav = () => {
     dispatch(globalActions.handleShowPanel("none"));
   };
 
+  const isCall = currentRoute === "video-call";
+
+  const handleHelpClick = () => {
+    toast(
+      "UMMS Teleport: If you need assistance, please contact your care team or floor nurse.",
+      {
+        icon: "ℹ️",
+        duration: 4000,
+        style: {
+          borderRadius: "10px",
+          background: "#009F95",
+          color: "#fff",
+          fontSize: "14px",
+          fontWeight: 500,
+        },
+      },
+    );
+  };
+
+  if (!isCall) {
+    return (
+      <Nav $isCall={false}>
+        <NavBrandGroup>
+          <Logo src={teleportLogo} alt="UMMS Teleport Logo" style={{ height: "38px" }} />
+          <Version>Version: 1.00</Version>
+        </NavBrandGroup>
+
+        <HelpButton type="button" onClick={handleHelpClick}>
+          <HelpIconCircle>?</HelpIconCircle>
+          {location.pathname.includes("family-and-friend") ? "More Info !" : "Need Help?"}
+        </HelpButton>
+      </Nav>
+    );
+  }
+
   return (
     <nav
       style={{
@@ -159,7 +203,7 @@ const MobileNav = () => {
       >
         <Logo src={logo} style={{ height: "36px", objectFit: "contain" }} />
 
-        {currentRoute === "video-call" && callType === "provider" && (
+        {callType === "provider" && (
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span
               style={{
@@ -185,127 +229,123 @@ const MobileNav = () => {
         )}
       </div>
 
-      {currentRoute === "video-call" ? (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          paddingTop: "4px",
+        }}
+      >
+        {/* Participants */}
         <div
+          onClick={() => handleShowPanel("participants")}
           style={{
+            cursor: "pointer",
+            opacity: panel === "participants" ? 0.6 : 1,
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            paddingTop: "4px",
+            justifyContent: "center",
           }}
         >
-          {/* Participants */}
-          <div
-            onClick={() => handleShowPanel("participants")}
-            style={{
-              cursor: "pointer",
-              opacity: panel === "participants" ? 0.6 : 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src={participantIcon}
-              alt="participant"
-              style={{ width: "26px", height: "18px", objectFit: "contain" }}
-            />
-          </div>
-
-          {/* Chat */}
-          <div
-            onClick={() => handleShowPanel("chat")}
-            style={{
-              cursor: "pointer",
-              opacity: panel === "chat" ? 0.6 : 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-            }}
-          >
-            <img
-              src={chatIcon}
-              alt="chat"
-              style={{ width: "22px", height: "20px", objectFit: "contain" }}
-            />
-            {unreadCount > 0 && (
-              <Badge>{unreadCount > 9 ? "9+" : unreadCount}</Badge>
-            )}
-          </div>
-
-          {/* On mobile, the two-user layout remains locked to the grid. */}
-          <div
-            onClick={handleLayout}
-            aria-disabled={!canChangeLayout}
-            title={
-              canChangeLayout
-                ? "Change layout"
-                : "Grid layout is fixed for two users on mobile"
-            }
-            style={{
-              cursor: canChangeLayout ? "pointer" : "not-allowed",
-              opacity: canChangeLayout ? 1 : 0.45,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src={layoutIcon}
-              alt="layout"
-              style={{
-                width: "20px",
-                height: "20px",
-                objectFit: "contain",
-              }}
-            />
-          </div>
-
-          {/* EMR / Upload — provider only */}
-          {callType === "provider" && (
-            <div
-              onClick={() => {
-                dispatch(globalActions.handleShowUploadModel(true));
-                dispatch(globalActions.handleShowPanel("none"));
-              }}
-              style={{
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img
-                src={uploadIcon}
-                alt="upload"
-                style={{ width: "21px", height: "20px", objectFit: "contain" }}
-              />
-            </div>
-          )}
-
-          {/* More */}
-          <div
-            onClick={() => handleShowPanel("more")}
-            style={{
-              cursor: "pointer",
-              opacity: panel === "more" ? 0.6 : 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src={moreIcon}
-              alt="more"
-              style={{ width: "28px", height: "20px", objectFit: "contain" }}
-            />
-          </div>
+          <img
+            src={participantIcon}
+            alt="participant"
+            style={{ width: "26px", height: "18px", objectFit: "contain" }}
+          />
         </div>
-      ) : (
-        <Version>Version: 1.00</Version>
-      )}
+
+        {/* Chat */}
+        <div
+          onClick={() => handleShowPanel("chat")}
+          style={{
+            cursor: "pointer",
+            opacity: panel === "chat" ? 0.6 : 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+          }}
+        >
+          <img
+            src={chatIcon}
+            alt="chat"
+            style={{ width: "22px", height: "20px", objectFit: "contain" }}
+          />
+          {unreadCount > 0 && (
+            <Badge>{unreadCount > 9 ? "9+" : unreadCount}</Badge>
+          )}
+        </div>
+
+        {/* On mobile, the two-user layout remains locked to the grid. */}
+        <div
+          onClick={handleLayout}
+          aria-disabled={!canChangeLayout}
+          title={
+            canChangeLayout
+              ? "Change layout"
+              : "Grid layout is fixed for two users on mobile"
+          }
+          style={{
+            cursor: canChangeLayout ? "pointer" : "not-allowed",
+            opacity: canChangeLayout ? 1 : 0.45,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={layoutIcon}
+            alt="layout"
+            style={{
+              width: "20px",
+              height: "20px",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+
+        {/* EMR / Upload — provider only */}
+        {callType === "provider" && (
+          <div
+            onClick={() => {
+              dispatch(globalActions.handleShowUploadModel(true));
+              dispatch(globalActions.handleShowPanel("none"));
+            }}
+            style={{
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src={uploadIcon}
+              alt="upload"
+              style={{ width: "21px", height: "20px", objectFit: "contain" }}
+            />
+          </div>
+        )}
+
+        {/* More */}
+        <div
+          onClick={() => handleShowPanel("more")}
+          style={{
+            cursor: "pointer",
+            opacity: panel === "more" ? 0.6 : 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={moreIcon}
+            alt="more"
+            style={{ width: "28px", height: "20px", objectFit: "contain" }}
+          />
+        </div>
+      </div>
     </nav>
   );
 };

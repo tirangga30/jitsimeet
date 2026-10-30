@@ -1,21 +1,15 @@
 import styled from "styled-components";
-import bgImage from "../../assets/img/9508803_26807 1.png";
 import { CommonIcon } from "../../components/Icon/Icon.styles";
+import bgNew from "../../assets/img/refactor/bgnew.jpeg";
 
 export const JoinContainer = styled.div`
   min-height: 100vh;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  background-image: url(${bgImage});
-  background-color: ${({ theme }) => theme.colors.primary};
-  background-blend-mode: multiply;
+  background: url(${bgNew}) no-repeat center center fixed;
   background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 `;
 
 export const Card = styled.div`
@@ -38,7 +32,7 @@ export const RightControls = styled.div`
 export const Heading = styled.h2`
   text-align: center;
   width: 100%;
-  color: white;
+  color: ${({ theme }) => theme.colors.navy};
   font-size: ${({ theme }) => theme.typography.large};
   margin-bottom: 12px;
 `;

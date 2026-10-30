@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import bgNew from "../../assets/img/refactor/bgnew.jpeg";
 
 export const MobileJoinContainer = styled.div`
   min-height: 100vh;
@@ -6,9 +7,10 @@ export const MobileJoinContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  background: #0e4b71;
-  padding: 30px 40px;
-  color: white;
+  background: url(${bgNew}) no-repeat center center fixed;
+  background-size: cover;
+  padding: 30px 24px;
+  color: ${({ theme }) => theme.colors.navy};
   box-sizing: border-box;
   overflow-y: auto;
   width: 100%;
@@ -22,9 +24,9 @@ export const MobileLogo = styled.img`
 
 export const MobileTitle = styled.h2`
   font-size: 20px;
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.navy};
   margin-bottom: 5px;
-  font-weight: 600;
+  font-weight: 700;
   text-align: center;
   padding: 0 10px;
   box-sizing: border-box;

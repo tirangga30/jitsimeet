@@ -19,16 +19,20 @@ export function useDevice() {
       const isNative = Capacitor.isNativePlatform();
       const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
-      // 1. Native iOS / Android Capacitor App
+      // 1. Screens wider than 1024px are desktop/laptop regardless of touchscreen
+      if (window.innerWidth > 1024) {
+        return setDeviceType("laptop");
+      }
+
+      // 2. Native iOS / Android Capacitor App
       if (isNative) {
         if (platform === "ios" || platform === "android") {
-          // If native on tablet/iPad, flag as ipad-app, else mobile
           const isTabletDevice = tabletQuery.matches || (hasTouch && window.innerWidth <= 1024);
           return setDeviceType(isTabletDevice ? "ipad-app" : "mobile");
         }
       }
 
-      // 2. Web browser flows
+      // 3. Web browser flows
       const ua = navigator.userAgent || "";
       const isIPadUA =
         /iPad/i.test(ua) ||
@@ -38,18 +42,14 @@ export function useDevice() {
         return setDeviceType("ipad-browser");
       }
 
-      if (mobileQuery.matches || /Mobile|Android|iP(hone|od)/i.test(ua)) {
+      const isMobileUA = /Mobile|Android|iP(hone|od)/i.test(ua);
+      if (window.innerWidth <= 768 || (isMobileUA && window.innerWidth <= 768)) {
         return setDeviceType("mobile");
       }
 
-      // 3. Fallback for touch screens (like touch laptops vs mobile/tablet)
-      if (hasTouch && (window.innerWidth <= 1024 || window.innerHeight <= 768)) {
-        return setDeviceType("mobile");
-      }
-
-      // 4. Absolute failsafe: if screen width is narrow, always force mobile layout
-      if (window.innerWidth <= 768) {
-        return setDeviceType("mobile");
+      // 4. Tablet screens (769px - 1024px)
+      if (window.innerWidth <= 1024 && (hasTouch || isMobileUA)) {
+        return setDeviceType("ipad-browser");
       }
 
       setDeviceType("laptop");
@@ -79,6 +79,10 @@ export function useDevice() {
 
 // Fallback helper for initial hook state setup (synchronous)
 function getDeviceTypeFallback(): DeviceType {
+  if (typeof window !== "undefined" && window.innerWidth > 1024) {
+    return "laptop";
+  }
+
   const isNative = Capacitor.isNativePlatform();
   const ua = navigator.userAgent || "";
   const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
@@ -92,16 +96,12 @@ function getDeviceTypeFallback(): DeviceType {
   }
 
   const isMobileUA = /Mobile|Android|iP(hone|od)/i.test(ua);
-  if (isMobileUA) {
+  if (typeof window !== "undefined" && window.innerWidth <= 768) {
     return "mobile";
   }
 
-  if (hasTouch && (window.innerWidth <= 1024 || window.innerHeight <= 768)) {
-    return "mobile";
-  }
-
-  if (window.innerWidth <= 768) {
-    return "mobile";
+  if (typeof window !== "undefined" && window.innerWidth <= 1024 && (hasTouch || isMobileUA)) {
+    return isNative ? "ipad-app" : "ipad-browser";
   }
 
   return "laptop";

@@ -72,7 +72,13 @@ export const getAvatarSize = (count: number) => {
 export type DeviceType = "ipad-app" | "ipad-browser" | "mobile" | "laptop";
 
 export function getDeviceType(): DeviceType {
+  if (typeof window !== "undefined" && window.innerWidth > 1024) {
+    return "laptop";
+  }
+
+  const isNative = Capacitor.isNativePlatform();
   const ua = navigator.userAgent || "";
+  const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
   // Check for iPad (including iOS 13+ iPad Safari which reports as Macintosh)
   const isIPad =
@@ -80,26 +86,20 @@ export function getDeviceType(): DeviceType {
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
   if (isIPad) {
-    return Capacitor.isNativePlatform() ? "ipad-app" : "ipad-browser";
+    return isNative ? "ipad-app" : "ipad-browser";
   }
 
-  const isMobile =
+  const isMobileUA =
     /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(
       ua,
     );
 
-  if (isMobile) {
+  if (typeof window !== "undefined" && window.innerWidth <= 768) {
     return "mobile";
   }
 
-  // Fallback for iPhone/Android when "Request Desktop Site" is active or UA is modified
-  const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-  if (hasTouch && (window.innerWidth <= 1024 || window.innerHeight <= 768)) {
-    return "mobile";
-  }
-
-  if (window.innerWidth <= 768) {
-    return "mobile";
+  if (typeof window !== "undefined" && window.innerWidth <= 1024 && (hasTouch || isMobileUA)) {
+    return isNative ? "ipad-app" : "ipad-browser";
   }
 
   return "laptop";

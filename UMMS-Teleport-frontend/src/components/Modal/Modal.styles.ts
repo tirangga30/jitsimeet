@@ -1,26 +1,30 @@
 import styled from "styled-components";
 
-export const ModelHeader = styled.div<{ $isprimaryBackground: boolean }>`
+export const ModelHeader = styled.div<{ $isprimaryBackground?: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: ${({ $isprimaryBackground, theme }) =>
-    $isprimaryBackground ? theme.colors.primary : theme.colors.secondary};
-  padding: 15px;
+  background: ${({ theme }) => theme.colors.navy};
+  padding: 16px 22px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 `;
 
 export const ModelHeaderTitle = styled.p`
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  font-size: ${({ theme }) => theme.typography.small};
+  gap: 10px;
+  font-size: 16px;
   color: ${({ theme }) => theme.colors.white};
-  font-weight: ${({ theme }) => theme.weight.bold};
+  font-weight: 600;
+  margin: 0;
 `;
 
 export const ModelBody = styled.div`
-  padding: 15px;
+  padding: 24px;
+  background: #ffffff;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 `;
 
 export const DeleteContainer = styled.div`

@@ -3,12 +3,18 @@ import {
   PageWrapper,
   Card,
   LogoWrapper,
+  IllustrationContainer,
   ErrorCode,
   Title,
   Description,
   BackButton,
 } from "./NotFound.styles";
-import logoImg from "../../assets/img/newlogo.png";
+import logoImg from "../../assets/img/logo.png";
+import PageDecorations from "../../components/PageDecorations/PageDecorations";
+import {
+  Doc404Illustration,
+  PatientNotFoundIllustration,
+} from "../../components/Illustrations/StatusIllustrations";
 
 interface NotFoundProps {
   errorCode?: string;
@@ -17,31 +23,45 @@ interface NotFoundProps {
 }
 
 export default function NotFound({
-  errorCode = "404 — Page Not Found",
+  errorCode = "404 — PAGE NOT FOUND",
   title = "We couldn't find that page",
-  description =
-    "The page you're looking for doesn't exist or may have been moved. Please check the link and try again.",
+  description = "The page you're looking for doesn't exist or may have been moved. Please check the link and try again.",
 }: NotFoundProps) {
   const navigate = useNavigate();
 
+  const isPatientNotFound =
+    errorCode?.toLowerCase().includes("patient") ||
+    title?.toLowerCase().includes("patient");
+
   return (
     <PageWrapper>
+      <PageDecorations />
+
       <Card>
-        {/* Logo */}
+        {/* UMMS Teleport Logo */}
         <LogoWrapper>
           <img src={logoImg} alt="UMMS Teleport" />
         </LogoWrapper>
 
-        {/* Error indicator */}
+        {/* Dedicated Illustration matching reference designs */}
+        <IllustrationContainer>
+          {isPatientNotFound ? (
+            <PatientNotFoundIllustration size={170} />
+          ) : (
+            <Doc404Illustration size={170} />
+          )}
+        </IllustrationContainer>
+
+        {/* Error Code Tagline */}
         <ErrorCode>{errorCode}</ErrorCode>
 
-        {/* Title */}
+        {/* Heading */}
         <Title>{title}</Title>
 
         {/* Description */}
         <Description>{description}</Description>
 
-        {/* Back button */}
+        {/* Return Button */}
         <BackButton id="not-found-go-home" onClick={() => navigate("/")}>
           ← Go Home
         </BackButton>

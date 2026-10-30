@@ -1,28 +1,28 @@
 import styled from "styled-components";
+import bgNew from "../assets/img/refactor/bgnew.jpeg";
 
 export const IpadContainer = styled.div<{ $isHome?: boolean }>`
   width: 100%;
   height: 100vh;
   height: 100dvh;
   margin: 0 auto;
-  background: ${({ theme, $isHome }) =>
-    $isHome ? "#ffffff" : theme.colors.background};
+  background: url(${bgNew}) no-repeat center center fixed;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
   padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) 0px
     env(safe-area-inset-left, 0px);
-
-  /* smooth corners + shadow */
-  box-shadow: 0px 0px 2vw rgba(0, 0, 0, 0.25);
 `;
 
 export const Content = styled.div`
   flex: 1;
   display: flex;
+  flex-direction: column;
   position: relative;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 export const PanelBackdrop = styled.div`
@@ -84,7 +84,8 @@ export const WebContainer = styled.div`
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0 auto;
-  background: ${({ theme }) => theme.colors.white};
+  background: url(${bgNew}) no-repeat center center fixed;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   overflow-y: auto;

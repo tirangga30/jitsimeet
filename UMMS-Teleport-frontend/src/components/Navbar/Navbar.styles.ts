@@ -1,30 +1,92 @@
 import styled from "styled-components";
 import { CommonIcon } from "../Icon/Icon.styles";
 
-export const Nav = styled.nav`
+export const Nav = styled.nav<{ $isCall?: boolean }>`
   position: relative;
-  height: clamp(60px, 8vh, 90px);
-  padding: 0 clamp(12px, 2vw, 32px);
-  background: ${({ theme }) => theme.colors.secondary};
-
+  height: ${({ $isCall }) => ($isCall ? "clamp(60px, 8vh, 76px)" : "64px")};
+  padding: 0 clamp(16px, 2.5vw, 28px);
+  background: ${({ $isCall, theme }) =>
+    $isCall ? theme.colors.navy : theme.colors.white};
+  border: ${({ $isCall, theme }) =>
+    $isCall ? "none" : `1px solid ${theme.colors.border}`};
+  border-radius: ${({ $isCall }) => ($isCall ? "0" : "14px")};
+  margin: ${({ $isCall }) => ($isCall ? "0" : "14px 24px 0 24px")};
+  box-shadow: ${({ $isCall }) =>
+    $isCall ? "none" : "0 4px 16px rgba(16, 27, 75, 0.04)"};
   display: flex;
   align-items: center;
   justify-content: space-between;
+  z-index: 100;
+  transition: all 0.2s ease;
 
-  /* Safe areas (for newer iPads with rounded corners) */
-  padding-left: max(env(safe-area-inset-left), 2vw);
-  padding-right: max(env(safe-area-inset-right), 2vw);
+  /* Safe areas */
+  padding-left: max(env(safe-area-inset-left), 20px);
+  padding-right: max(env(safe-area-inset-right), 20px);
+
+  @media (max-width: 768px) {
+    margin: ${({ $isCall }) => ($isCall ? "0" : "10px 12px 0 12px")};
+    padding: 0 14px;
+    height: 56px;
+  }
+`;
+
+export const NavBrandGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
 `;
 
 export const Logo = styled.img`
-  height: 85%;
+  height: 38px;
+  max-width: 180px;
   object-fit: contain;
 `;
 
-export const Version = styled.span`
-  color: ${({ theme }) => theme.colors.white};
-  font-size: 0.8em !important;
-  opacity: 0.8;
+export const Version = styled.span<{ $isCall?: boolean }>`
+  color: ${({ $isCall, theme }) =>
+    $isCall ? theme.colors.white : theme.colors.secondaryText};
+  font-size: 13px !important;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+`;
+
+export const HelpButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #E7F8F8;
+  color: #007F78;
+  border: 1px solid #B8EBE6;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #D4F2EE;
+    border-color: #009F95;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 159, 149, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+export const HelpIconCircle = styled.span`
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #009F95;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const MenuBar = styled.div`

@@ -119,12 +119,14 @@ const AppModal = ({
               width: "100%",
               height: "100%",
               background: "white",
-              borderRadius: "4px",
+              borderRadius: "14px",
+              boxShadow: "0 20px 60px rgba(16, 27, 75, 0.28)",
               padding: "0px",
               position: "relative",
               zIndex: 1000,
               display: "flex",
               flexDirection: "column",
+              overflow: "hidden",
             }}
           >
             <ModelHeader $isprimaryBackground={false}>
