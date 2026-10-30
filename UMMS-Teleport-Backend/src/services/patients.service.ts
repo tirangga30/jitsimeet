@@ -107,9 +107,9 @@ export async function createPatient(
 }
 
 export async function getPatientById(id: string): Promise<Patient | null> {
-  const patient = await prisma.patient.findUnique({
+  const patient = await prisma.patient.findFirst({
     where: {
-      id,
+      OR: [{ id }, { CBEN: id }, { MRN: id }],
     },
   });
 
@@ -118,9 +118,9 @@ export async function getPatientById(id: string): Promise<Patient | null> {
 export async function getPatientDetailById(
   id: string,
 ): Promise<PatientDetail | null> {
-  const patient = await prisma.patient.findUnique({
+  const patient = await prisma.patient.findFirst({
     where: {
-      id,
+      OR: [{ id }, { CBEN: id }, { MRN: id }],
     },
 
     include: {

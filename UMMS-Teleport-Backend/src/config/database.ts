@@ -12,14 +12,14 @@ function fromDatabaseUrl(url: string): PoolConfig {
 
   return {
     host: parsed.hostname,
-    port: Number(parsed.port),
+    port: Number(parsed.port) || 5432,
     database: parsed.pathname.slice(1),
     user: decodeURIComponent(parsed.username),
     password: decodeURIComponent(parsed.password),
     ssl,
     max: 10,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 3000,
+    connectionTimeoutMillis: 10000,
   };
 }
 
