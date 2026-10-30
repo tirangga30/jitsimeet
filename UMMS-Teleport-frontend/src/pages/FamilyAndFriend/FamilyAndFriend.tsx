@@ -215,6 +215,7 @@ export const FamilyAndFriend = () => {
               relation: m.relation,
               mobile: m.mobile,
               email: m.email,
+              type: "family",
             })),
           }),
         },

@@ -29,10 +29,7 @@ import { updateFamilyAndFriends } from "../services/family-friends.service";
 const EMR_URL = process.env.EMR_URL!;
 
 config();
-const rawJitsiUrl = process.env.JITSI_BASE_URL || "https://meet.example.com";
-const JITSI_DOMAIN = rawJitsiUrl.startsWith("http")
-  ? rawJitsiUrl.replace(/\/+$/, "")
-  : `https://${rawJitsiUrl.replace(/\/+$/, "")}`;
+const JITSI_DOMAIN = process.env.JITSI_BASE_URL || "meet.bulmartech.com";
 
 function inviteeToParticipant(invitee: Invitee): MeetingParticipant {
   return {
@@ -66,27 +63,21 @@ export async function createInvitationsController(
     return;
   }
 
-  const allowedMemberTypes = new Set(["provider", "guest", "family", "friend"]);
-  const invalidMember = members.find(
-    (member) =>
-      !member ||
-      typeof member.type !== "string" ||
-      !allowedMemberTypes.has(member.type.trim().toLowerCase()),
-  );
-  if (invalidMember) {
-    res.status(400).json({
-      message:
-        "Each member must have type provider or guest (family and friend are accepted as guest aliases)",
-    });
-    return;
-  }
-
   const patient = await getPatientById(String(patientId));
 
   if (!patient) {
     res.status(404).json({ message: "Patient not found" });
     return;
   }
+
+  const allowedMemberTypes = new Set(["provider", "guest", "family", "friend"]);
+  const normalizedMembers = members.map((member) => ({
+    ...member,
+    type:
+      typeof member?.type === "string" && allowedMemberTypes.has(member.type.trim().toLowerCase())
+        ? member.type.trim().toLowerCase()
+        : "family",
+  }));
 
   const patientMember = {
     id: patient.id,
@@ -97,7 +88,7 @@ export async function createInvitationsController(
     status: `Invited ${getCurrentTimeFormatted()}`,
     type: "patient",
   };
-  const membersWithPatient = [patientMember, ...members];
+  const membersWithPatient = [patientMember, ...normalizedMembers];
 
   let batch;
   let isNewBatch = false;
@@ -117,7 +108,7 @@ export async function createInvitationsController(
   // 3. If it's a new session, create it from scratch
   if (!batch) {
     batch = createInvitations({
-      patientId: String(patientId),
+      patientId: patient.id,
       members: membersWithPatient,
       ...(req.body.phone ? { doctorPhone: String(req.body.phone) } : {}),
     });
@@ -128,7 +119,7 @@ export async function createInvitationsController(
   // their own non-moderator token when they accept an invitation.
   const moderatorToken = buildJitsiJwt({
     room: batch.roomId,
-    userId: String(patientId),
+    userId: patient.id,
     name: "Doctor",
     email: "",
     moderator: true,
@@ -140,7 +131,7 @@ export async function createInvitationsController(
 
   if (isNewBatch) {
     try {
-      await recordMeeting(String(patientId), batch.roomId);
+      await recordMeeting(patient.id, batch.roomId);
     } catch (err) {
       console.error("Failed to persist meeting record:", err);
     }
@@ -176,15 +167,10 @@ export async function createInvitationsController(
   );
 
   // Send SMS to each invitee
-  const frontendUrl =
-    process.env.FRONTEND_URL ||
-    (req.headers.origin as string) ||
-    "http://localhost:5173";
-
   const smsPromises = batch.invitees.map(async (invitee) => {
     if (!invitee.phone) return;
 
-    const inviteLink = `${frontendUrl.replace(/\/+$/, "")}/invite/accept?inviteId=${invitee.inviteId}&room=${encodeURIComponent(batch.roomId)}`;
+    const inviteLink = `https://bulmartech.com/meeting/${patientId}?room=${batch.roomId}&inviteId=${invitee.inviteId}&moderator=false`;
     const message = `Hello ${invitee.name}, you have been invited to a medical consultation. Join here: ${inviteLink}`;
     console.log(message);
 
